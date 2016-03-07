@@ -274,12 +274,12 @@ RooAbsPdf* PdfModelBuilder::getPowerLawSingle(string prefix, int order){
       utilities.insert(pair<string,RooAbsPdf*>(ename, new RooPower(ename.c_str(),ename.c_str(),*obs_var,*params[name])));
       pows->add(*utilities[ename]);
     }
-    cout << "RooArgLists..." << endl;
-    fracs->Print("v");
-    pows->Print("v");
-    cout << "Function..." << endl;
+ //   cout << "RooArgLists..." << endl;
+  //  fracs->Print("v");
+  //  pows->Print("v");
+   // cout << "Function..." << endl;
     RooAbsPdf *pow = new RooAddPdf(prefix.c_str(),prefix.c_str(),*pows,*fracs,true); 
-    pow->Print("v");
+//    pow->Print("v");
     return pow;
     //bkgPdfs.insert(pair<string,RooAbsPdf*>(pow->GetName(),pow));
   }
@@ -305,9 +305,9 @@ RooAbsPdf* PdfModelBuilder::getLaurentSeries(string prefix, int order){
   for (int i=1; i<=nlower; i++){
     string name = Form("%s_l%d",prefix.c_str(),i);
 //for hgg, exo at upper bouandry 
-    //params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.25/order,0.000001,0.999999)));
-    params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.25/order,1e-12,1-1e-12)));
-  //  params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.25/order,0.,1.)));
+    params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.25/order,0.000001,0.999999)));
+//    params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.25/order,1e-12,1-1e-12)));
+    //params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.25/order,0.,1.)));
     plist->add(*params[name]);
     string pname =  Form("%s_powl%d",prefix.c_str(),i);
     utilities.insert(pair<string,RooAbsPdf*>(pname, new RooPower(pname.c_str(),pname.c_str(),*obs_var,RooConst(-4.-i))));
@@ -316,14 +316,18 @@ RooAbsPdf* PdfModelBuilder::getLaurentSeries(string prefix, int order){
   // odd terms
   for (int i=1; i<=nhigher; i++){
     string name = Form("%s_h%d",prefix.c_str(),i);
-    //params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.25/order,0.000001,0.999999)));
-    params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.25/order,1e-12,1-1e-12)));
-//    params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.25/order,0.,1.)));
+    params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.25/order,0.000001,0.999999)));
+//    params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.25/order,1e-12,1-1e-12)));
+    //params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.25/order,0.,1.)));
     plist->add(*params[name]);
     string pname =  Form("%s_powh%d",prefix.c_str(),i);
     utilities.insert(pair<string,RooAbsPdf*>(pname, new RooPower(pname.c_str(),pname.c_str(),*obs_var,RooConst(-4.+i))));
     pows->add(*utilities[pname]);
   }
+//  pows->Print("v");
+//  cout << "-----------------------------------------------------------" << endl;
+//  plist->Print("v");
+//  cout << "-----------------------------------------------------------" << endl;
   RooAddPdf *pdf = new RooAddPdf(prefix.c_str(),prefix.c_str(),*pows,*plist,true);
   return pdf;
   //bkgPdfs.insert(pair<string,RooAbsPdf*>(pdf->GetName(),pdf));
@@ -368,8 +372,8 @@ RooAbsPdf* PdfModelBuilder::getPdfFromFile(string &prefix){
 }
 
 RooAbsPdf* PdfModelBuilder::getExponentialSingle(string prefix, int order){
-  if(order<1){
-    cerr << "[WARNING] --  needs to be at least of order 1" << endl;
+  if(order<1 || order > 3){
+    cerr << "[WARNING] --  needs to be at least of order 3 and smaller than order 5" << endl;
     return NULL;
   }
   
@@ -383,20 +387,36 @@ RooAbsPdf* PdfModelBuilder::getExponentialSingle(string prefix, int order){
     assert(nfracs==nexps-1);
     RooArgList *fracs = new RooArgList();
     RooArgList *exps = new RooArgList();
+//	RooArgList *dependents = new RooArgList();
+//	dependents->add(*obs_var);
     for (int i=1; i<=nfracs; i++){
       string name =  Form("%s_f%d",prefix.c_str(),i);
       params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.9-float(i-1)*1./nfracs,0.0001,0.9999)));
+     // params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.9-float(i-1)*1./nfracs,0.0,1.0)));
       fracs->add(*params[name]);
     }
     for (int i=1; i<=nexps; i++){
       string name =  Form("%s_p%d",prefix.c_str(),i);
+      string name2 =  Form("%s_p%d_2",prefix.c_str(),i);
       string ename =  Form("%s_e%d",prefix.c_str(),i);
-      params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),TMath::Max(-1.,-0.04*(i+1)),-1.,0.)));
-      utilities.insert(pair<string,RooAbsPdf*>(ename, new RooExponential(ename.c_str(),ename.c_str(),*obs_var,*params[name])));
+     params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),TMath::Max(-1.,-0.04*(i+1)),-1.,0.)));
+    //  params.insert(pair<string,RooRealVar*>(name, new RooRealVar(name.c_str(),name.c_str(),0.4*(i+1),0.,1.0)));
+	  RooArgList *try1 = new RooArgList();
+      try1->add(*params[name]);
+//	dependents->add(*params[name]);
+	
+	  //RooFormulaVar* squared=new RooFormulaVar(name2.c_str(),name2.c_str(),"-TMath::Power(@0,2)",*try1);
+     utilities.insert(pair<string,RooAbsPdf*>(ename, new RooExponential(ename.c_str(),ename.c_str(),*obs_var,*params[name])));
+    // utilities.insert(pair<string,RooAbsPdf*>(ename, new RooExponential(ename.c_str(),ename.c_str(),*obs_var,*squared)));
+//  	  string formula= Form("TMath::Exp(-@0*TMath::Power(@%d,2))",i) ; 
+//	utilities.insert(pair<string,RooAbsPdf*>(ename, new RooGenericPdf(ename.c_str(),ename.c_str(),formula.c_str(),*dependents)));
       exps->add(*utilities[ename]);
     }
-    //fracs->Print("v");
-    //exps->Print("v");
+    cout << "--------------------------" << endl;
+    cout << "--------------------------" << endl;
+    cout << "--------------------------" << endl;
+    fracs->Print("v");
+    exps->Print("v");
     RooAbsPdf *exp = new RooAddPdf(prefix.c_str(),prefix.c_str(),*exps,*fracs,true);
     exp->Print();
     cout << "--------------------------" << endl;
@@ -408,7 +428,7 @@ RooAbsPdf* PdfModelBuilder::getExponentialSingle(string prefix, int order){
 //MQ
 //number of functions
 RooAbsPdf* PdfModelBuilder::getAtlas(string prefix, int order){
-  if(order<1 || order > 2){
+  if(order<1 ){
     cerr << "[WARNING] --  needs to be at least of order 1" << endl;
     return NULL;
   }
@@ -465,7 +485,7 @@ RooAbsPdf* PdfModelBuilder::getVVdijet(string prefix, int order){
     RooArgList *dependents = new RooArgList();
     dependents->add(*obs_var);
     string coeff1 =  Form("%s_coeff1",prefix.c_str());
-    params.insert(pair<string,RooRealVar*>(coeff1, new RooRealVar(coeff1.c_str(),coeff1.c_str(),0. ,-200.0,200.))); //-100,1000.
+    params.insert(pair<string,RooRealVar*>(coeff1, new RooRealVar(coeff1.c_str(),coeff1.c_str(),0. ,-500.0,500.))); //-100,1000.
     dependents->add(*params[coeff1]);
 //    string coeff2 =  Form("%s_coeff2",prefix.c_str());
   //  params.insert(pair<string,RooRealVar*>(coeff2, new RooRealVar(coeff2.c_str(),coeff2.c_str(),10. ,-30.0,500.)));
@@ -490,8 +510,8 @@ RooAbsPdf* PdfModelBuilder::getVVdijet(string prefix, int order){
 
 
 RooAbsPdf* PdfModelBuilder::getDijet(string prefix, int order){
-     if(order<2 || order > 2  ){
-            cerr << "[INFO] -- dijet needs to be at least of order 2 to be defined and to describe data correctl" << endl;
+     if(order<2  ){
+            cerr << "[INFO] -- dijet needs to be at least of order 2 to be defined and to describe data correct" << endl;
               return NULL;
                  }
         else {
