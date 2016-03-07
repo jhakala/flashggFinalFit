@@ -353,7 +353,7 @@ void plot(RooRealVar *mass, RooAbsPdf *pdf, RooDataSet *data, string name,vector
  
   *prob = getGoodnessOfFit(mass,pdf,data,name, gofToys);
   RooPlot *plot = mass->frame();
-  mass->setRange("unblindReg_1",0,500);
+  mass->setRange("unblindReg_1",0,650);
   //mass->setRange("unblindReg_2",150,180);
   if (BLIND) {
     data->plotOn(plot,Binning(nBinsForMass),CutRange("unblindReg_1"));
@@ -408,7 +408,7 @@ void plot(RooRealVar *mass, RooMultiPdf *pdfs, RooCategory *catIndex, RooDataSet
 		//plot->Draw();
 		///canv->Print(Form("test_LC.pdf"));
 
-  mass->setRange("unblindReg_1",0,500);
+  mass->setRange("unblindReg_1",0,650);
 //  int nBinsForMass=mass->getBinning().numBins() ;
   if (BLIND) {
 //  data->plotOn(plot,Binning(nBinsForMass),CutRange("unblindReg_1"));
@@ -458,7 +458,7 @@ void plot(RooRealVar *mass, map<string,RooAbsPdf*> pdfs, RooDataSet *data, strin
   leg->SetFillColor(0);
   leg->SetLineColor(0);
   RooPlot *plot = mass->frame();
-  mass->setRange("unblindReg_1",0,500);
+  mass->setRange("unblindReg_1",0,650);
  
   //mass->setRange("unblindReg_2",150,180);
   if (BLIND) {
@@ -601,8 +601,8 @@ int main(int argc, char* argv[]){
   string outfilename;
   bool verbose=false;
   bool saveMultiPdf=false;
-string diphotonCatsStr_;
-vector<string> diphotonCats_;
+  string diphotonCatsStr_;
+  vector<string> diphotonCats_;
  bool isData_ =0;
  string sqrts_ = "13TeV";
  string analysisType_ = "";
@@ -611,16 +611,16 @@ vector<string> diphotonCats_;
   desc.add_options()
     ("help,h",                                                                                  "Show help")
     ("infilename,i", po::value<string>(&fileName),                                              "In file name")
-    ("ncats,c", po::value<int>(&ncats)->default_value(5),                                       "Number of categories")
+    ("ncats,c", po::value<int>(&ncats)->default_value(2),                                       "Number of categories")
     ("datfile,d", po::value<string>(&datfile)->default_value("dat/fTest.dat"),                  "Right results to datfile for BiasStudy")
     ("outDir,D", po::value<string>(&outDir)->default_value("plots/fTest"),                      "Out directory for plots")
-    ("analysisType,a", po::value<string>(&analysisType_)->default_value("cic2"),                 "What kind of analysis you are rinning (cic, cic2...)... <Eventually this might also be able to directly populate the diphotonCats ?>")
+    ("analysisType,a", po::value<string>(&analysisType_)->default_value("Vqqg"),                 "What kind of analysis you are rinning (cic, cic2...)... <Eventually this might also be able to directly populate the diphotonCats ?>")
     ("saveMultiPdf", po::value<string>(&outfilename),         					"Save a MultiPdf model with the appropriate pdfs")
     ("runFtestCheckWithToys", 									"When running the F-test, use toys to calculate pvals (and make plots) ")
     ("unblind",  									        "Dont blind plots")
     ("isData",    								    	        "Use Data not MC-based pseudodata ")
     ("rungofToys",    								    	        "compute gof with toys instead of chi2 ")
-	("diphotonCats,f", po::value<string>(&diphotonCatsStr_)->default_value("EBEB,EBEE"),       "Flashgg category names to consider")
+    ("diphotonCats,f", po::value<string>(&diphotonCatsStr_)->default_value("Btag,AntiBtag"),       "Flashgg category names to consider")
     ("verbose,v",                                                                               "Run with more output")
   ;
   po::variables_map vm;
@@ -674,20 +674,20 @@ if (saveMultiPdf){
 		} */
 	}
 	vector<string> functionClasses;
-     functionClasses.push_back("Dijet");
-//     functionClasses.push_back("Exponential");
-//	functionClasses.push_back("Expow");
-    functionClasses.push_back("PowerLaw");
-//    functionClasses.push_back("Laurent");
+        functionClasses.push_back("Dijet");
+        functionClasses.push_back("Exponential");
+        functionClasses.push_back("Expow");
+        //functionClasses.push_back("PowerLaw");
+        //functionClasses.push_back("Laurent");
 	functionClasses.push_back("Atlas");
 	functionClasses.push_back("VVdijet");
 	map<string,string> namingMap;
  	namingMap.insert(pair<string,string>("Dijet","dijet"));
-//	namingMap.insert(pair<string,string>("Exponential","exp"));
+        namingMap.insert(pair<string,string>("Exponential","exp"));
 	namingMap.insert(pair<string,string>("VVdijet","vvdijet"));
-//	namingMap.insert(pair<string,string>("Expow","expow"));
-	namingMap.insert(pair<string,string>("PowerLaw","pow"));
-//	namingMap.insert(pair<string,string>("Laurent","lau"));
+        namingMap.insert(pair<string,string>("Expow","expow"));
+	//namingMap.insert(pair<string,string>("PowerLaw","pow"));
+        //namingMap.insert(pair<string,string>("Laurent","lau"));
 	namingMap.insert(pair<string,string>("Atlas","atlas"));
 	// store results here
 
@@ -705,25 +705,26 @@ if (saveMultiPdf){
 	fprintf(resFile,"\\hline\n");
 
 	for (int cat=startingCategory; cat<ncats; cat++){
-		string catname;
-		catname = Form("%s",diphotonCats_[cat].c_str());
-		RooRealVar *mass;
-    	int nBinsForMass=4000.;
-		if(diphotonCats_[cat]=="EBEB") 
+          string catname;
+          catname = Form("%s",diphotonCats_[cat].c_str());
+          RooRealVar *mass;
+          RooRealVar isSR("isSR","isSR",-2,2);
+          int nBinsForMass=4000.;
+		if(diphotonCats_[cat]=="Btag") 
 		{
-			mass = new RooRealVar (Form("mgg%s",catname.c_str()),Form("mgg%s",catname.c_str()), 230, 10000);
+			mass = new RooRealVar ("vgMass","vgMass", 600, 10000);
 			nBinsForMass=4000;
-		}else if(diphotonCats_[cat]=="EBEE") {
-			mass = new RooRealVar (Form("mgg%s",catname.c_str()),Form("mgg%s",catname.c_str()), 320, 10000);
-			nBinsForMass=3400;
+		}else if(diphotonCats_[cat]=="AntiBtag") {
+                        mass = new RooRealVar ("vgMass","vgMass", 600, 10000);
+			nBinsForMass=4000;
 		}
 		mass->setBins(nBinsForMass);
 
-    	TNtuple *inNT;
+    	TTree *inNT;
 		if (isData_){
-			inNT = (TNtuple*)inFile->Get(Form("tree_data_%s_%s",analysisType_.c_str(),diphotonCats_[cat].c_str()));
+                  inNT = (TTree*)inFile->Get("tree");
 		} else {
-			inNT = (TNtuple*)inFile->Get(Form("tree_data_%s_%s",analysisType_.c_str(),diphotonCats_[cat].c_str()));
+                  inNT = (TTree*)inFile->Get("tree");
 		}
 
 		if (verbose) std::cout << "[INFO]  considering nTuple " << inNT->GetName() << std::endl;
@@ -731,17 +732,17 @@ if (saveMultiPdf){
 			map<string,std::vector<int> > choices_envelope;
 			map<string,RooAbsPdf*> pdfs;
 			map<string,RooAbsPdf*> allPdfs;
-			RooDataSet *dataFull = new RooDataSet( Form("data_%s",catname.c_str()),"data_unbinned" ,inNT, RooArgSet(*mass) );
+			RooDataSet *dataFull = new RooDataSet( Form("data_%s",catname.c_str()),"data_unbinned" ,inNT, RooArgSet(*mass,isSR),"isSR > 0.5" );
  		if (dataFull){
 			std::cout << "[INFO] opened data for  "  << dataFull->GetName()  <<" - " << dataFull <<std::endl;
 			if (verbose) dataFull->Print("V");
 		}
-		if(diphotonCats_[cat]=="EBEE"){  
-			mass->setRange(320,1600); //FIXME Need a more configurable method to set range
-			nBinsForMass=64;//roughly binning of 20 GeV acoording to EXO-15-004
-		}else if(diphotonCats_[cat]=="EBEB") {
-			mass->setRange(230,1600); //FIXME Need a more configurable method to set range binning 20 GeV
-			nBinsForMass=69; //roughly binning of 20 GeV according to EXO-15-004
+		if(diphotonCats_[cat]=="AntiBtag"){  
+			mass->setRange(600,3000); //FIXME Need a more configurable method to set range
+			nBinsForMass=240;//roughly binning of 20 GeV acoording to EXO-15-004
+		}else if(diphotonCats_[cat]=="Btag") {
+			mass->setRange(600,3000); //FIXME Need a more configurable method to set range binning 20 GeV
+			nBinsForMass=240; //roughly binning of 20 GeV according to EXO-15-004
 		}
 		mass->setBins(nBinsForMass);
 		pdfsModel.setObsVar(mass);
@@ -915,10 +916,10 @@ if (saveMultiPdf){
 			outputws->import(nBackground);
 			plot(mass,pdf,&catIndex,dataFull,Form("%s/multipdf_%s",outDir.c_str(),catname.c_str()),diphotonCats_,cat,bestFitPdfIndex);
 	    	mass->setMax(10000.);
-			if(diphotonCats_[cat]=="EBEB")   		mass->setBins(4000.);
-			else if(diphotonCats_[cat]=="EBEE")   		mass->setBins(3400.);
-			outputws->import(*pdf);
-			outputws->import(*dataFull);
+			if(diphotonCats_[cat]=="Btag")   		mass->setBins(4000.);
+			else if(diphotonCats_[cat]=="AntiBtag")   		mass->setBins(3400.);
+			outputws->import(*pdf, RenameVariable("vgMass","x")) ;
+			outputws->import(*dataFull, RenameVariable("vgMass","x"));
 		}
 
 	}

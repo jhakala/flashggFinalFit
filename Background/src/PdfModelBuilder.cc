@@ -418,28 +418,28 @@ RooAbsPdf* PdfModelBuilder::getAtlas(string prefix, int order){
     dependents->add(*obs_var);
     string coeff1 =  Form("%s_coeff1",prefix.c_str());
 	if( order==1){
-    	params.insert(pair<string,RooRealVar*>(coeff1, new RooRealVar(coeff1.c_str(),coeff1.c_str(),-10. ,-200.0,200.)));
+    	params.insert(pair<string,RooRealVar*>(coeff1, new RooRealVar(coeff1.c_str(),coeff1.c_str(),-10. ,-200.0,500.)));
 	}else if(order==2){
-    	params.insert(pair<string,RooRealVar*>(coeff1, new RooRealVar(coeff1.c_str(),coeff1.c_str(),35. ,-200.0,200.)));
+    	params.insert(pair<string,RooRealVar*>(coeff1, new RooRealVar(coeff1.c_str(),coeff1.c_str(),35. ,-200.0,500.)));
 	}else{
-    	params.insert(pair<string,RooRealVar*>(coeff1, new RooRealVar(coeff1.c_str(),coeff1.c_str(),-60. ,-200.0,200.)));
+    	params.insert(pair<string,RooRealVar*>(coeff1, new RooRealVar(coeff1.c_str(),coeff1.c_str(),-60. ,-200.0,500.)));
 	
 	}
 		dependents->add(*params[coeff1]);
   	for (int i=1; i<=order; i++){
 		string logc =  Form("%s_log%d",prefix.c_str(),i);
 		if(i==1 && order==1){
-    		params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),10.,-200.0,200.)));
+    		params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),10.,-200.0,500.)));
 		}else if(i==1 && order==2){
-    		params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-10.,-200.0,200.)));
+    		params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-10.,-200.0,500.)));
 		}else if(i==2 && order==2){
-    		params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-2.,-200.0,200.)));
+    		params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-2.,-200.0,500.)));
 		}else if(i==1 && order==3){
-    		params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),60.,-200.0,200.)));
+    		params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),60.,-200.0,500.)));
 		}else if(i==2 && order==3){
-    		params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),30.,-200.0,200.)));
+    		params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),30.,-200.0,500.)));
 		}else if(i==3 && order==3){
-    		params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),3.,-200.0,200.)));
+    		params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),3.,-200.0,500.)));
 		}
 		if (i==1){
 			formula_exp = Form("@2");
@@ -503,39 +503,39 @@ RooAbsPdf* PdfModelBuilder::getDijet(string prefix, int order){
 		string logc =  Form("%s_log%d",prefix.c_str(),i);
     
                 if(order ==2 && i==1) {//FIXME make setVal nicer
-    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),4.5,-100.0,100.)));
+    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),4.5,-100.0,200.)));
 		}
 		if(order==2 && i==2) {
-    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-0.8,-100.0,100.0)));
+    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-0.8,-100.0,200.0)));
 		}
 	
                 if(order ==3 && i==1) {//FIXME make setVal nicer
-    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),3.0,-100.0,100.)));
+    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),3.0,-100.0,200.)));
 		}
 		if(order==3 && i==2) {
-    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-0.5,-100.0,100.)));
+    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-0.5,-100.0,200.)));
 		}
 		
 		if(order ==3 && i==3) {
-    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-0.3,-100.0,100.)));
+    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-0.3,-100.0,200.)));
 	
         }
                 if(order ==4 && i==1) {//FIXME make setVal nicer
-    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),4.0,-100.0,100.)));
+    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),4.0,-100.0,200.)));
 		}
 		if(order==4 && i==2) {
-    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-0.5,-100.0,100.)));
+    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-0.5,-100.0,200.)));
 		}
 		
 		if(order ==4 && i==3) {
-    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-0.05,-100.0,100.)));
+    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-0.05,-100.0,200.)));
 	}
 		if(order ==4 && i==4) {
-    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-0.02,-100.0,100.)));
+    	params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-0.02,-100.0,200.)));
 	}
 	    else{
                    
-                params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-4.6,-100.0,100.0)));
+                params.insert(pair<string,RooRealVar*>(logc, new RooRealVar(logc.c_str(),logc.c_str(),-4.6,-100.0,200.0)));
             } 
                 if (i==1){
 			formula_exp = Form("  (@%d*TMath::Power(log(@0),%d))",i,i);

@@ -69,6 +69,7 @@ class PdfModelBuilder {
     RooAbsPdf* getExpow(string prefix,int order);
     RooAbsPdf* getKeysPdf(string prefix);
     RooAbsPdf* getPdfFromFile(string &prefix);
+    RooAbsPdf* getVVdijet(string prefix,int nParams);
 
   private:
    

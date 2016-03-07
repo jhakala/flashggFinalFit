@@ -9,6 +9,7 @@
 <use name="rootcint"/>
 <lib name="TreePlayer"/>
 <lib name="PyROOT"/>
+<use name="diphotons/RooUtils"/>
 <export>
 <lib name="1"/>
 </export>

@@ -140,6 +140,7 @@ pair<double,double> getNormTermNllAndRes(RooRealVar *mgg, RooAbsData *data, RooM
 	double bestFitNorm;
 
 	for (int pInd=0; pInd<mpdf->getNumPdfs(); pInd++){
+          std::cout << "pdfindex -> " << pInd+1 << " of " << mpdf->getNumPdfs() << std::endl;
 		mcat->setIndex(pInd);
 		RooRealVar *normVar = new RooRealVar(Form("%snorm",mpdf->getCurrentPdf()->GetName()),"",0.,1.e6);
 		RooExtendPdf *extPdf;
@@ -161,8 +162,8 @@ pair<double,double> getNormTermNllAndRes(RooRealVar *mgg, RooAbsData *data, RooM
 		}
 
 		RooMinimizer minim(*nll);
-		minim.setStrategy(0);
-		//minim.minimize("Minuit2","simplex");
+		minim.setStrategy(2);
+		minim.minimize("Minuit2","simplex");
 		minim.migrad();
 		double corrNll = nll->getVal()+mpdf->getCorrection();
 
@@ -640,11 +641,11 @@ void plotAllPdfs(RooRealVar *mgg, RooAbsData *data, RooMultiPdf *mpdf, RooCatego
 	plot->GetXaxis()->SetTitle("m_{#gamma#gamma} (GeV)");
 	if (!unblind) {
 		mgg->setRange("unblind_up",150,180);
-		mgg->setRange("unblind_down",100,110);
-		data->plotOn(plot,Binning(80),CutRange("unblind_down,unblind_up"));
+		mgg->setRange("unblind_down",500,650);
+		data->plotOn(plot,Binning(100),CutRange("unblind_down"));
 	}
 	else {
-		data->plotOn(plot,Binning(80));
+		data->plotOn(plot,Binning(100));
 	}
 
 	TLegend *leg = new TLegend(0.6,0.5,0.89,0.89);
@@ -714,9 +715,9 @@ int main(int argc, char* argv[]){
 		("makeCrossCheckProfPlots",																													"Make some cross check plots -- very slow!")
 		("massStep,m", po::value<double>(&massStep)->default_value(0.5),						   			"Mass step for calculating bands. Use a large number like 5 for quick running")
 		("nllTolerance,n", po::value<double>(&nllTolerance)->default_value(0.05),			 			"Tolerance for nll calc in %")
-		("mhLow,L", po::value<int>(&mhLow)->default_value(100),															"Starting point for scan")
-		("mhHigh,H", po::value<int>(&mhHigh)->default_value(180),														"End point for scan")
-		("mhVal", po::value<double>(&mhvalue_)->default_value(125.),														"Choose the MH for the plots")
+		("mhLow,L", po::value<int>(&mhLow)->default_value(500),															"Starting point for scan")
+		("mhHigh,H", po::value<int>(&mhHigh)->default_value(2000),														"End point for scan")
+		("mhVal", po::value<double>(&mhvalue_)->default_value(750.),														"Choose the MH for the plots")
 		("intLumi", po::value<float>(&intLumi)->default_value(0.),																"What intLumi in fb^{-1}")
 		("sqrts,S", po::value<int>(&sqrts)->default_value(8),																"Which centre of mass is this data from?")
 		("isFlashgg",  po::value<int>(&isFlashgg_)->default_value(1),  								    	        "Use Flashgg output ")
@@ -743,32 +744,37 @@ int main(int argc, char* argv[]){
 	if (makeCrossCheckProfPlots) system(Form("mkdir -p %s/normProfs",outDir.c_str()));
 
 	TFile *inFile = TFile::Open(bkgFileName.c_str());
-	RooWorkspace *inWS = (RooWorkspace*)inFile->Get("multipdf");
-	if (!inWS) inWS = (RooWorkspace*)inFile->Get("cms_hgg_workspace");
+	RooWorkspace *inWS = (RooWorkspace*)inFile->Get("wtemplates");
+	if (!inWS) inWS = (RooWorkspace*)inFile->Get("cms_vqqg_workspace");
 	if (!inWS) {
 		cout << "[ERROR] "<< "Cant find the workspace" << endl;
 		exit(0);
 	}
-	RooRealVar *mgg = (RooRealVar*)inWS->var("CMS_hgg_mass");
-  string catname;
+        if( inWS ) {
+          //inWS->Print("V");
+          //return 0;
+        }
+	RooRealVar *mgg = (RooRealVar*)inWS->var("vgMass");
+        mgg->setBins(100);
+        string catname;
 	if (isFlashgg_){
 		catname = Form("%s",flashggCats_[cat].c_str());
 	} else {
-		catname = Form("cat%d",cat);
+		catname = Form("%s",flashggCats_[cat].c_str());
 	}
 
 	TFile *outFile = TFile::Open(outFileName.c_str(),"RECREATE");
 	RooWorkspace *outWS = new RooWorkspace("bkgplotws","bkgplotws");
 
-	RooAbsData *data = (RooDataSet*)inWS->data(Form("data_mass_%s",catname.c_str()));
+	RooAbsData *data = (RooDataSet*)inWS->data(Form("data_%s",catname.c_str()));
 	if (useBinnedData) data = (RooDataHist*)inWS->data(Form("roohist_data_mass_%s",catname.c_str()));
 
 	RooAbsPdf *bpdf = 0;
 	RooMultiPdf *mpdf = 0; 
 	RooCategory *mcat = 0;
 	if (isMultiPdf) {
-		mpdf = (RooMultiPdf*)inWS->pdf(Form("CMS_hgg_%s_%dTeV_bkgshape",catname.c_str(),sqrts));
-		mcat = (RooCategory*)inWS->cat(Form("pdfindex_%s_%dTeV",catname.c_str(),sqrts));
+		mpdf = (RooMultiPdf*)inWS->pdf(Form("model_bkg_%s",catname.c_str()));
+		mcat = (RooCategory*)inWS->cat(Form("pdfindex_%s",catname.c_str()));
 		if (!mpdf || !mcat){
 			cout << "[ERROR] "<< "Can't find multipdfs (" << Form("CMS_hgg_%s_%dTeV_bkgshape",catname.c_str(),sqrts) << ") or multicat ("<< Form("pdfindex_%s_%dTeV",catname.c_str(),sqrts) <<")" << endl;
 			exit(0);
@@ -820,11 +826,11 @@ int main(int argc, char* argv[]){
 	leg->SetLineColor(0);
 
 	cout<< "[INFO] " << "Plotting data and nominal curve" << endl;
-	RooPlot *plot = mgg->frame();
-	RooPlot *plotLC = mgg->frame();
+	RooPlot *plot = mgg->frame(500,2000,100);
+	RooPlot *plotLC = mgg->frame(500,2000,100);
 	plot->GetXaxis()->SetTitle("m_{#gamma#gamma} (GeV)");
 	plot->SetTitle("");
-	data->plotOn(plot,Binning(80),Invisible());
+	data->plotOn(plot,Invisible());
 	TObject *dataLeg = (TObject*)plot->getObject(plot->numItems()-1);
 	mpdf->getCurrentPdf()->plotOn(plot,LineColor(kRed),LineWidth(2));
 	RooCurve *nomBkgCurve = (RooCurve*)plot->getObject(plot->numItems()-1);
@@ -853,6 +859,8 @@ int main(int argc, char* argv[]){
 				 */
 			double nomBkg = nomBkgCurve->interpolate(center);
 			double nllBest = getNormTermNll(mgg,data,mpdf,mcat,nomBkg,lowedge,upedge);
+                        
+                        std::cout << "after getting normterm" << std::endl;
 
 			// sensible range
 			double lowRange = TMath::Max(0.,nomBkg - 3*TMath::Sqrt(nomBkg));
@@ -941,11 +949,11 @@ int main(int argc, char* argv[]){
 
 		if (!unblind) {
 			mgg->setRange("unblind_up",150,180);
-			mgg->setRange("unblind_down",100,110);
-			data->plotOn(plot,Binning(80),CutRange("unblind_down,unblind_up"));
+			mgg->setRange("unblind_down",500,650);
+			data->plotOn(plot,CutRange("unblind_down"));
 		}
 		else {
-			data->plotOn(plot,Binning(80));
+			data->plotOn(plot);
 		}
 
 		if (doBands) {
@@ -1026,7 +1034,7 @@ int main(int argc, char* argv[]){
 		std::cout << "[INFO] intLumi " << intLumi << std::endl;
 		cmslatex->DrawLatex(0.2,0.85,Form("#splitline{CMS Preliminary}{#sqrt{s} = %dTeV L = %2.3ffb^{-1}}",sqrts,intLumi));
 		latex->DrawLatex(0.2,0.78,catLabel.c_str());
-		outWS->import(*lumi,RecycleConflictNodes());
+		//outWS->import(*lumi,RecycleConflictNodes());
 
 		if (unblind) plot->SetMinimum(0.0001);
 		plot->GetYaxis()->SetTitleOffset(1.3);
