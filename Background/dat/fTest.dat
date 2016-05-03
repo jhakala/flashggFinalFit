@@ -1,13 +1,18 @@
 cat=Btag
-truth=Atlas:1:atlas1
-truth=Dijet:0:dijet0
+truth=Atlas:2:atlas2
+truth=Dijet:2:dijet2
 truth=Exponential:1:exp1
 truth=Expow:1:expow1
+truth=Laurent:1:lau1
+truth=PowerLaw:1:pow1
 truth=VVdijet:1:vvdijet1
 paul=Atlas:1:atlas1
+paul=Atlas:2:atlas2
+paul=Atlas:3:atlas3
 paul=Dijet:2:dijet2
 paul=Exponential:1:exp1
-paul=Exponential:3:exp3
+paul=Expow:1:expow1
+paul=Laurent:1:lau1
+paul=PowerLaw:1:pow1
 paul=VVdijet:1:vvdijet1
-paul=VVdijet:2:vvdijet2
 
