@@ -8,7 +8,6 @@ truth=PowerLaw:1:pow1
 truth=VVdijet:1:vvdijet1
 paul=Atlas:1:atlas1
 paul=Atlas:2:atlas2
-paul=Atlas:3:atlas3
 paul=Dijet:2:dijet2
 paul=Exponential:1:exp1
 paul=Expow:1:expow1

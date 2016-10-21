@@ -724,10 +724,10 @@ if (saveMultiPdf){
           int nBinsForMass=4000.;
 		if(diphotonCats_[cat]=="Btag") 
 		{
-			mass = new RooRealVar ("vgMass","vgMass", 600, 10000);
+			mass = new RooRealVar ("vgMass","vgMass", 650, 10000);
 			nBinsForMass=4000;
 		}else if(diphotonCats_[cat]=="AntiBtag") {
-                        mass = new RooRealVar ("vgMass","vgMass", 600, 10000);
+                        mass = new RooRealVar ("vgMass","vgMass", 650, 10000);
 			nBinsForMass=4000;
 		}
 		mass->setBins(nBinsForMass);
@@ -750,10 +750,11 @@ if (saveMultiPdf){
 			if (verbose) dataFull->Print("V");
 		}
 		if(diphotonCats_[cat]=="AntiBtag"){  
-			mass->setRange(600,3000); //FIXME Need a more configurable method to set range
+      //TODO: playing with fit range
+			mass->setRange(650,3000); //FIXME Need a more configurable method to set range
 			nBinsForMass=240;//roughly binning of 20 GeV acoording to EXO-15-004
 		}else if(diphotonCats_[cat]=="Btag") {
-			mass->setRange(600,3000); //FIXME Need a more configurable method to set range binning 20 GeV
+			mass->setRange(650,3000); //FIXME Need a more configurable method to set range binning 20 GeV
 			nBinsForMass=240; //roughly binning of 20 GeV according to EXO-15-004
 		}
 		mass->setBins(nBinsForMass);
@@ -928,6 +929,7 @@ if (saveMultiPdf){
 			storedPdfs.Print();
 			std::cout << "[INFO] Best Fit Pdf = " << bestFitPdfIndex << ", " << storedPdfs.at(bestFitPdfIndex)->GetName() << std::endl;
 			std::cout << "// ------------------------------------------------------------------------- //" <<std::endl;
+      std::cout << "compiletest" << std::endl;
 			std::cout << "[INFO] Simple check of index "<< simplebestFitPdfIndex <<std::endl;
 			std::cout << "// ------------------------------------------------------------------------- //" <<std::endl; 
 
