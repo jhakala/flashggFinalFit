@@ -31,7 +31,7 @@ USERLIBS += -L$(CMSSW_BASE)/lib
 endif
 
 USERLIBS += $(shell root-config --glibs) -lTMVA -lMinuit -lFoam -lRooFit -lRooFitCore -lMathMore -lRooStats 
-CXXFLAGS = -Wall -g -Wl,-rpath=$(BASEDIR)/lib 
+CXXFLAGS = -Wall -g -std=c++11 -Wl,-rpath=$(BASEDIR)/lib
 LDFLAGS = -shared -W 
 
 CXX=g++

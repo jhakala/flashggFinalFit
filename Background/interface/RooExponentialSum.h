@@ -44,7 +44,7 @@ protected:
 
   Double_t evaluate() const;
 
-  //ClassDef(RooExponentialSum,1) // PowerLaw PDF
+  ClassDef(RooExponentialSum,1) // PowerLaw PDF
 	// not needed for cmssw 7xx?
 };
 

@@ -34,7 +34,7 @@
 #include "RooRealVar.h"
 #include "RooArgList.h"
 
-//ClassImp(RooExponentialSum)
+ClassImp(RooExponentialSum)
 //;
 
 
@@ -58,8 +58,8 @@ RooExponentialSum::RooExponentialSum(const char *name, const char *title,
   RooAbsArg* coef;
   while ((coef = (RooAbsArg*)_coefIter->Next())) {
     if (!dynamic_cast<RooAbsReal*>(coef)){
-      cout << "RooExponentialSum::ctor(" << GetName() << ") ERROR: coefficient " << coef->GetName() 
-	   << " is not of type RooAbsReal" << endl ;
+      std::cout << "RooExponentialSum::ctor(" << GetName() << ") ERROR: coefficient " << coef->GetName() 
+	   << " is not of type RooAbsReal" << std::endl ;
       assert(0) ;
     }
     coefList.add(*coef);

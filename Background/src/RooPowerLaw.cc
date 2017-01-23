@@ -30,7 +30,7 @@
 #include "../interface/RooPowerLaw.h"
 #include "RooRealVar.h"
 
-//ClassImp(RooPowerLaw)
+ClassImp(RooPowerLaw)
 
 
 //_____________________________________________________________________________
