@@ -1,0 +1,7 @@
+<lcgdict>
+  <class name="PdfModelBuilder"     />
+  <class name="ProfileMultiplePdfs" />
+  <class name="RooExponentialSum"   />
+  <class name="RooPowerLaw"         />
+  <class name="RooPowerLawSum"      />
+</lcgdict>

@@ -1,6 +1,5 @@
 <use name="HiggsAnalysis/CombinedLimit"/>
 <use name="FWCore/Framework"/>
-<use name="rootrflx"/>
 <use name="roofitcore"/>
 <use name="roofit"/>
 <use name="roostats"/>
@@ -10,7 +9,7 @@
 <lib name="PyROOT"/>
 <use name="diphotons/RooUtils"/>
 <export>
-<lib name="1"/>
+  <lib name="1"/>
 </export>
 <architecture name="slc6_amd64_gcc481">
 	<flags REM_CXXFLAGS="-Werror=unused-variable -Werror=maybe-uninitialized"/>
